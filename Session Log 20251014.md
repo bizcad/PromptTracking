@@ -31,3 +31,38 @@ The file is ready to be included in any `ProjectTracking.zip` distribution packa
 
 Made changes.
 
+## Sample commands (2025-10-14 11:17:07)
+PS G:\repos\PromptTracking> . .\log-aliases.ps1
+Session log aliases loaded! Type 'log-help' for commands.
+PS G:\repos\PromptTracking> log
+Appended clipboard to G:\repos\PromptTracking\.\Session Log 20251014.md
+PS G:\repos\PromptTracking> logs
+Appended clipboard to G:\repos\PromptTracking\.\Session Log 20251014.md
+PS G:\repos\PromptTracking> logs "Section"
+Appended clipboard to Section
+PS G:\repos\PromptTracking> Logc
+Appended clipboard to G:\repos\PromptTracking\.\Session Log 20251014.md
+PS G:\repos\PromptTracking> Logt "How session logging works"
+Appended clipboard to G:\repos\PromptTracking\.\Session Log 20251014.md
+PS G:\repos\PromptTracking> 
+
+## Output of Sample Commands
+
+[2025-10-14 11:11:13]
+The MIT License is one of the most permissive open-source licenses, allowing others to use, modify, and distribute your code with minimal restrictions, requiring only that they include the original copyright notice and license text.
+
+
+## Entry 2025-10-14 11:11:17
+The MIT License is one of the most permissive open-source licenses, allowing others to use, modify, and distribute your code with minimal restrictions, requiring only that they include the original copyright notice and license text.
+
+
+[2025-10-14 11:11:47]
+```nThe MIT License is one of the most permissive open-source licenses, allowing others to use, modify, and distribute your code with minimal restrictions, requiring only that they include the original copyright notice and license text.
+```
+
+
+## How session logging works (2025-10-14 11:11:53)
+The MIT License is one of the most permissive open-source licenses, allowing others to use, modify, and distribute your code with minimal restrictions, requiring only that they include the original copyright notice and license text.
+
+
+

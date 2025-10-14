@@ -167,9 +167,9 @@ After loading aliases with `. .\log-aliases.ps1`:
 
 ```powershell
 log     # Basic clipboard entry with timestamp
-logs    # Section entry with heading  
-logc    # Code block with proper markdown formatting
-logt    # Custom title section (prompts for title)
+logs    # Appends the clipboard to a markdown Section to a log file named by the Title
+logc    # Code block with proper markdown formatting  
+logt    # Title section with custom heading
 ```
 
 ## Troubleshooting

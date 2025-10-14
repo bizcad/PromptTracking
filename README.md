@@ -40,7 +40,7 @@ Then use these simple commands:
 ```powershell
 # Copy content to clipboard, then:
 log     # Basic clipboard entry with timestamp
-logs    # Section entry with heading
+logs    # Appends the clipboard to a markdown Section to a log file named by the Title
 logc    # Code block with proper markdown formatting  
 logt    # Title section with custom heading
 ```
@@ -93,6 +93,9 @@ function example() {
 1. Copy the contents of any `PromptTracking` folder to your project root
 2. Load aliases: `. .\PromptTracking\log-aliases.ps1`
 3. Optional: Add to PowerShell profile for automatic loading
+
+## Sample Commands and Outputs
+A sample Session Log is included with this project that logged the **How it works** and **Output of Sample Commands**.
 
 ## License
 
