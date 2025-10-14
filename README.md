@@ -93,3 +93,7 @@ function example() {
 1. Copy the contents of any `PromptTracking` folder to your project root
 2. Load aliases: `. .\PromptTracking\log-aliases.ps1`
 3. Optional: Add to PowerShell profile for automatic loading
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
