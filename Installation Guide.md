@@ -1,6 +1,8 @@
 # Session Logging System - Installation Guide
 
 A step-by-step guide to install and set up the Session Logging System for your ChatGPT projects.
+## Short Answer
+Download the zip file of the project from github and extract it to a subdirectory named "PromptTracking" in the root directory of your project.
 
 ## Prerequisites
 
@@ -81,9 +83,10 @@ Set-Location "C:\Users\YourName\Documents\ChatGPT Projects\Parkinsons Research"
 ```
 
 ### Step 3: Extract the Session Logging System
-
-1. **Download** the `ProjectTracking.zip` file
-2. **Extract** the contents into your project directory:
+1. This project is self contained and only needs PowerShell to run.
+2. **Download** the `ProjectTracking.zip` file
+   - Click the green Code button and select Download zip.   
+3. **Extract** the contents into your project directory:
    - Right-click the ZIP file → "Extract All..."
    - Choose your project directory as the destination
    - Ensure the `PromptTracking` folder is directly in your project root
