@@ -89,6 +89,11 @@ function example() {
 
 ```
 
+**Section Comment and Date**
+```markdown
+## test (2025-10-14 11:30:54)
+Your clipboard content here
+```
 ## Setup for New Projects
 1. Copy the contents of any `PromptTracking` folder to your project root
 2. Load aliases: `. .\PromptTracking\log-aliases.ps1`
