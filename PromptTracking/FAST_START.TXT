@@ -1,0 +1,26 @@
+Roger, 
+I did not forget about you. I was updating the github repository for you.
+
+Go to https://github.com/bizcad/PromptTracking
+
+
+1. Click the green button and download the zip file. It should go to your Downloads folder.
+
+2. Unzip it to a place you can work with it. I put it in a "repos" directory. 
+- One common place is in "C:\Users\{yourusername}\source\repos\".
+
+3. I do not know how you organize your research.
+- for me everything is code and is save it to github, so repos is where it goes.
+- for you, you can just unzip it to your Downloads folder and it will extract to a subdirectory Downloads\PromptTracking\.
+- in the top level directory are two meaningful files.
+
+README.md (the file which displays on the main page of the repo)
+Getting-Started-with-VS-Code-and-AI.md (a detailed explanation of how to use it in VS Code. Read Part 1.
+
+- They are both markdown files. You can read them in the Github repo.
+
+4. PromptTracking directory into the root of your Project folder where ever that is.
+
+Text me with questions.
+
+Nick
