@@ -1,21 +1,20 @@
 # PromptTracking 📝
 
-> **A frictionless session logging system for AI-assisted development workflows**
+> **A frictionless session logging system for developers and AI-assisted workflows**
 
-Transform your AI coding sessions into searchable, timestamped knowledge bases with simple PowerShell commands and automatic VS Code workspace integration.
+Capture your development sessions into searchable, timestamped markdown logs with a single PowerShell command. Perfect for tracking conversations with AI assistants, documenting decisions, and creating searchable knowledge bases.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-blue.svg)
-![VS Code](https://img.shields.io/badge/VS%20Code-Compatible-green.svg)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)
 
 ## 🎯 What is PromptTracking?
 
-PromptTracking is a **clipboard-to-markdown session logging system** designed specifically for developers working with AI assistants like GitHub Copilot. It captures your development conversations, decisions, and code changes in real-time, creating a searchable record that preserves context between sessions.
+PromptTracking is a **clipboard-to-markdown session logging system** designed for developers working with AI assistants like GitHub Copilot, ChatGPT, and Claude. It captures your development conversations, decisions, and code changes in real-time, creating a searchable record that preserves context between sessions.
 
 ### 💡 Why This Exists
 
-When working with AI assistants, context is everything. PromptTracking solves the problem of:
+When working with AI assistants, context is everything. PromptTracking solves:
 - **Lost context** when starting new AI sessions
 - **Forgotten solutions** from previous conversations  
 - **Undocumented decisions** and their reasoning
@@ -24,19 +23,144 @@ When working with AI assistants, context is everything. PromptTracking solves th
 ## ✨ Key Features
 
 - **🚀 One-command logging** - `logt "Fixed the bug"` captures timestamped entries instantly
-- **🔄 Automatic workspace setup** - Loads seamlessly when you open VS Code projects
 - **📋 Clipboard integration** - Paste code, discussions, or notes with proper markdown formatting
-- **🎨 Rich formatting** - Section headers, code blocks, and structured entries
-- **🔍 Searchable records** - Markdown format works with any search tool
+- **🎨 Rich formatting** - Section headers, code blocks, and structured entries with markers
+- **🔍 Searchable records** - Markdown format works with any search tool or text editor
 - **⚡ Zero friction** - Doesn't interrupt your coding flow
-- **🌐 Portable** - Works on any machine with PowerShell
+- **🌐 Project-agnostic** - Works in any folder, no configuration needed
+- **💻 PowerShell-first** - Runs on Windows with just PowerShell, no VS Code required
+- **🎯 Optional VS Code integration** - Automatic loading when opening workspaces
 
 ## 🚀 Quick Start
 
-### Option 1: Automatic VS Code Integration (Recommended)
+### Step 1: Copy PromptTracking Folder
 
-1. **Download and extract** this repository to your project root as `PromptTracking/`
-2. **Add this task** to your VS Code workspace file (`.code-workspace`):
+```powershell
+# Clone or download the repository
+git clone https://github.com/bizcad/PromptTracking.git
+
+# Copy the PromptTracking folder to your project root
+cp -Recurse PromptTracking "C:\Your\Project\Path\"
+```
+
+### Step 2: Load the System
+
+```powershell
+# Navigate to your project
+cd "C:\Your\Project\Path"
+
+# Load the session logging system (one-time per PowerShell session)
+. .\PromptTracking\load-session-logging.ps1
+```
+
+### Step 3: Start Logging
+
+```powershell
+# Copy something to clipboard, then run:
+logt "What you're doing"
+
+# View the generated log file
+cat ".\PromptTracking\Session Log $(Get-Date -Format 'yyyyMMdd').md"
+```
+
+That's it! Your log file is ready to use.
+
+## 📋 Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `log` | Append clipboard with timestamp |
+| `logs` | Append clipboard as section heading |
+| `logc` | Append clipboard as code block |
+| `logt "title"` | Append with custom title section |
+| `logp` | Append as "Prompt:" (with markers) |
+| `logr` | Append as "Response:" (with markers) |
+| `logn` | Append as "Note:" (with markers) |
+| `Show-LogHelp` | Display all commands |
+
+## 🎯 Usage Examples
+
+### AI Conversation Logging
+
+```powershell
+# Copy your prompt to clipboard
+logp
+
+# Copy the AI response to clipboard
+logr
+```
+
+### Code Changes
+
+```powershell
+# Copy a code snippet to clipboard
+logc
+```
+
+### Daily Notes
+
+```powershell
+# Copy your notes to clipboard
+logt "Fixed database connection pool issue"
+```
+
+### Generated Output
+
+```markdown
+# Session Log 2025-01-18
+
+[2025-01-18 14:30:22]
+Initial project setup
+
+## Database Design (2025-01-18 14:31:15)
+
+<!--Start Prompt-->
+How should I structure the database schema?
+<!--End Prompt-->
+
+## Response (2025-01-18 14:31:45)
+
+<!--Start Response-->
+I'd recommend normalizing to 3NF...
+<!--End Response-->
+
+## Code Example (2025-01-18 14:32:10)
+
+```sql
+CREATE TABLE Users (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    Username NVARCHAR(255) NOT NULL
+);
+```
+```
+
+## 📁 Installation Methods
+
+### Option 1: Simple (PowerShell per session)
+
+```powershell
+cd "C:\Your\Project"
+. .\PromptTracking\load-session-logging.ps1
+```
+
+No setup needed - just load when you need it.
+
+### Option 2: Global (PowerShell Profile)
+
+Add to your PowerShell profile (`$PROFILE`):
+
+```powershell
+# Auto-load session logging when in a project folder
+if (Test-Path ".\PromptTracking\load-session-logging.ps1") {
+    . .\PromptTracking\load-session-logging.ps1
+}
+```
+
+Now it loads automatically in project folders with PromptTracking.
+
+### Option 3: VS Code Workspace (Optional)
+
+Create or update your `.code-workspace` file:
 
 ```json
 {
@@ -44,7 +168,7 @@ When working with AI assistants, context is everything. PromptTracking solves th
   "tasks": {
     "version": "2.0.0",
     "tasks": [{
-      "label": "Load Session Log Aliases",
+      "label": "Load Session Logging",
       "type": "shell",
       "command": "pwsh",
       "args": ["-File", "${workspaceFolder}/PromptTracking/workspace-init.ps1"],
@@ -54,237 +178,154 @@ When working with AI assistants, context is everything. PromptTracking solves th
 }
 ```
 
-3. **Open your workspace** in VS Code - the logging system loads automatically! 🎉
+Open the workspace in VS Code and the logging system loads automatically!
 
-### Option 2: Manual Setup
+## 🛠️ Requirements
 
-```powershell
-# Navigate to your project with PromptTracking folder
-cd "C:\your-project"
-
-# Load the session logging system
-. .\PromptTracking\log-aliases.ps1
-
-# Start logging!
-logt "Session started"
-```
-
-## 📋 Available Commands
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `logt "text"` | **Log text entry** with timestamp | `logt "Fixed authentication bug"` |
-| `logs "heading"` | **Create section** with heading | `logs "New Feature Implementation"` |
-| `logc` | **Log code block** from clipboard | Copy code, then `logc` |
-| `log-help` | **Show all commands** | `log-help` |
+- **PowerShell 5.1+** (built-in on Windows 10+)
+- **Windows OS** (PS Core on Mac/Linux with modifications)
+- **Clipboard support** (standard on Windows)
 
 ## 📁 File Structure
 
 ```
-PromptTracking/
-├── 📜 workspace-init.ps1          # Automatic VS Code workspace setup
-├── 🔧 session-log.ps1             # Core logging functionality  
-├── ⚡ log-aliases.ps1              # Command shortcuts
-├── 📚 InstallationGuide.md        # Detailed setup instructions
-├── 📋 Session Logging README.md   # Usage documentation
-├── 📄 Session Log YYYYMMDD.md     # Daily log files (auto-created)
-└── 📃 LICENSE                     # MIT License
-```
-
-## 🎯 Usage Examples
-
-### Basic Logging
-```powershell
-# Log a thought or decision
-logt "Decided to use Entity Framework for the data layer"
-
-# Create a new section
-logs "Database Schema Design"
-
-# Log code from clipboard (copy first, then run)
-logc
-```
-
-### Automatic Workspace Output
-When you open a VS Code workspace with PromptTracking configured:
-
-```
-🚀 Initializing workspace...
-📁 Project root: C:\YourProject
-📝 Loading session logging system...
-✅ Session logging system loaded successfully!
-
-📋 Available commands:
-   logt    - Log text entry
-   logs    - Log section header  
-   logc    - Log code block
-   log-help - Show all logging commands
-
-🎯 Workspace ready!
-```
-
-### Generated Log Format
-```markdown
-## Database Schema Design (2025-10-15 14:30:22)
-
-[2025-10-15 14:31:15]
-Decided to use Entity Framework for the data layer
-
-[2025-10-15 14:32:08]
-```csharp
-public class SurveyQuestion 
-{
-    public Guid Id { get; set; }
-    public string QuestionText { get; set; }
-    public int SortOrder { get; set; }
-}
-```
-```
-
-## 🛠️ Installation
-
-### Prerequisites
-- **Windows** with PowerShell 5.1+ (or PowerShell Core)
-- **VS Code** (optional, for automatic workspace integration)
-- **Git** (optional, for cloning)
-
-### Step-by-Step Setup
-
-1. **Download** the latest release or clone this repository
-2. **Extract/copy** the `PromptTracking` folder to your project root
-3. **Choose your setup method:**
-
-#### VS Code Workspace (Automatic)
-- Follow the "Quick Start" workspace configuration above
-- Open your workspace file - logging loads automatically
-
-#### PowerShell Profile (Global)
-```powershell
-# Add to your $PROFILE
-if (Test-Path ".\PromptTracking\session-log.ps1") {
-    . ".\PromptTracking\log-aliases.ps1"
-    Write-Host "Session logging loaded!" -ForegroundColor Green
-}
-```
-
-#### Manual (Per Session)
-```powershell
-. .\PromptTracking\log-aliases.ps1
+YourProject/
+├── PromptTracking/
+│   ├── session-log.ps1               # Main logging script
+│   ├── log-aliases.ps1               # Command aliases
+│   ├── load-session-logging.ps1      # Initialization helper
+│   ├── workspace-init.ps1            # VS Code workspace setup
+│   └── Session Log YYYYMMDD.md       # Daily logs (auto-created)
+├── .code-workspace                   # VS Code config (optional)
+└── ... your project files
 ```
 
 ## 🎨 Advanced Features
 
-### VS Code Integration
-- **Automatic loading** when workspace opens
-- **Terminal integration** with PowerShell
-- **Task automation** for consistent setup
-- **Multi-project support** with relative paths
+### Clipboard Size Guards
 
-### Customization
-- **Modify aliases** in `log-aliases.ps1`
-- **Adjust output format** in `session-log.ps1`
-- **Custom workspace tasks** for your workflow
-- **Integration** with other tools via PowerShell
-
-### Output Management
-- **Daily log files** prevent huge documents
-- **Markdown format** works with any editor
-- **Searchable content** using VS Code, grep, or any tool
-- **Version control friendly** - commit your session logs!
-
-## 🤝 Use Cases
-
-### Perfect for AI-Assisted Development
-- **Track conversations** with GitHub Copilot, ChatGPT, Claude
-- **Document decisions** and their reasoning
-- **Preserve context** between sessions
-- **Create searchable knowledge** bases
-
-### Development Workflows
-- **Bug investigation** tracking
-- **Feature development** progress
-- **Code review** discussions
-- **Meeting notes** and decisions
-
-### Learning & Teaching
-- **Tutorial progress** tracking
-- **Concept exploration** logs
-- **Problem-solving** documentation
-- **Knowledge sharing** with teams
-
-## 🔧 Troubleshooting
-
-### Commands Not Working?
 ```powershell
-# Check if aliases are loaded
-Get-Alias logt
-
-# Reload manually if needed
-. .\PromptTracking\log-aliases.ps1
+# Prevent accidental huge clipboard pastes
+.\PromptTracking\session-log.ps1 `
+  -GuardLargeClipboard `
+  -MaxClipboardChars 50000 `
+  -AutoTruncate
 ```
 
-### VS Code Workspace Not Loading?
-1. Verify `workspace-init.ps1` exists in `PromptTracking/`
-2. Check workspace task configuration
-3. Ensure PowerShell execution policy allows scripts:
-   ```powershell
-   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-   ```
+### Day Boundary Markers
 
-### Path Issues?
-- Use **absolute paths** if relative paths don't work
-- Ensure `PromptTracking` folder is at project root
-- Check that all required files exist
+```powershell
+# Mark start/end of day for parsing
+.\PromptTracking\session-log.ps1 -DayStart
+.\PromptTracking\session-log.ps1 -DayEnd
+```
 
-## 📈 Benefits
+### Custom Heading Levels
 
-### Immediate Value
-- **Zero setup friction** with automatic workspace loading
-- **Instant logging** without breaking flow
-- **Visual feedback** showing system status
-- **Consistent commands** across all projects
+```powershell
+# Use H1 instead of H2
+log "Entry" -H1 -Section
+```
 
-### Long-term Impact
-- **Conversation continuity** between AI sessions
-- **Knowledge preservation** of what worked
-- **Faster context switching** when returning to projects
-- **Team knowledge sharing** through committed logs
+### Direct Script Usage
+
+```powershell
+# No aliases - call script directly
+.\PromptTracking\session-log.ps1 -Section -Title "My Entry" -CodeBlock
+```
+
+## 🔄 Use Cases
+
+### AI-Assisted Development
+- Track conversations with GitHub Copilot, ChatGPT, Claude
+- Document reasoning behind code decisions
+- Create searchable knowledge bases of solutions
+- Preserve context between development sessions
+
+### Development Workflows
+- Bug investigation and debugging
+- Feature implementation progress
+- Code review discussions
+- Meeting notes and decisions
+
+### Learning & Documentation
+- Tutorial progress tracking
+- Concept exploration logs
+- Problem-solving documentation
+- Team knowledge sharing
+
+## 🚨 Troubleshooting
+
+### "Clipboard empty" warning
+```powershell
+# Copy something first
+"Your text" | Set-Clipboard
+
+# Then run the command
+log
+```
+
+### Execution policy blocked
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### Commands not found
+```powershell
+# Load the system in your current session
+. .\PromptTracking\load-session-logging.ps1
+```
+
+See [InstallationGuide.md](InstallationGuide.md) for more troubleshooting.
+
+## 📚 Documentation
+
+- **[InstallationGuide.md](InstallationGuide.md)** - Complete setup instructions for all methods
+- **[How Session Logging Works.md](How%20Session%20Logging%20Works.md)** - Technical deep-dive into the system
+- **[Session Logging README.md](Session%20Logging%20README.md)** - Usage patterns and best practices
+
+## 💡 Tips
+
+- **Daily logs**: Each day creates a new file automatically
+- **Searchable**: Open any log file in VS Code or text editor and search
+- **Safe**: Nothing is deleted - logs accumulate indefinitely
+- **Portable**: Copy the `PromptTracking` folder to move it to another project
+- **Flexible**: Can log to custom paths with `-Path` parameter
+- **Team-friendly**: Commit logs to version control or add to `.gitignore`
 
 ## 🤔 FAQ
 
-**Q: Does this work with other editors besides VS Code?**
-A: Yes! The core PowerShell scripts work in any terminal. VS Code integration is optional.
+**Q: Is my data private?**
+A: Yes. Logs are stored locally as markdown files on your machine. Nothing is sent anywhere.
 
-**Q: Can I customize the log format?**
-A: Absolutely! Edit `session-log.ps1` to change timestamp format, markdown structure, or add custom fields.
+**Q: Can I customize the format?**
+A: Absolutely! Edit `session-log.ps1` or the aliases to match your workflow.
 
-**Q: Is this safe for sensitive projects?**
-A: The logs are local files. Review content before committing to version control. Add `Session Log *.md` to `.gitignore` if needed.
+**Q: Does this work without VS Code?**
+A: Yes! The core scripts work in any PowerShell terminal. VS Code integration is optional.
+
+**Q: Can I delete old logs?**
+A: Yes. They're just markdown files - delete them like any other file.
 
 **Q: Does this work on Mac/Linux?**
-A: The scripts are PowerShell-based. Install PowerShell Core on Mac/Linux, or adapt the scripts for bash/zsh.
+A: The scripts are PowerShell-based. Install PowerShell Core and they should work with modifications.
 
-## 🚀 Getting Started
+## 🚀 Next Steps
 
-Ready to transform your AI development workflow? 
-
-1. **[Download the latest release](https://github.com/yourusername/PromptTracking/releases)**
-2. **Extract to your project** as `PromptTracking/`
-3. **Follow the Quick Start** guide above
-4. **Start logging** with `logt "First entry!"`
+1. **Clone or download** the repository
+2. **Copy PromptTracking folder** to your project
+3. **Load the system**: `. .\PromptTracking\load-session-logging.ps1`
+4. **Test a command**: `logt "Testing the system"`
+5. **View your log**: `cat ".\PromptTracking\Session Log $(Get-Date -Format 'yyyyMMdd').md"`
+6. **Customize** for your workflow
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- **Inspired by** the need for better AI development workflows
-- **Built for** developers working with GitHub Copilot, ChatGPT, and other AI assistants
-- **Designed around** the principle that good documentation accelerates development
-
 ---
 
-⭐ **If this tool improves your AI development workflow, please give it a star!** ⭐
+⭐ **If PromptTracking improves your workflow, please star this repository!** ⭐
 
-**Questions?** Open an issue or start a discussion. **Improvements?** Pull requests welcome!
+**Have questions?** Open an issue on GitHub.  
+**Want to contribute?** Pull requests are welcome!

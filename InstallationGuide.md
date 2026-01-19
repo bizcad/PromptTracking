@@ -1,223 +1,300 @@
-# Session Logging System - Installation Guide
+# PromptTracking - Installation Guide
 
-A comprehensive guide for setting up the session logging system with automatic workspace initialization.
+A comprehensive guide for setting up the PromptTracking session logging system in any project folder.
 
 ## 📋 Overview
 
-The session logging system provides:
+PromptTracking provides:
 - **Quick clipboard-to-markdown logging** with timestamp
 - **Terminal aliases** for fast workflow integration
-- **Automatic workspace setup** in VS Code
-- **Portable configuration** using relative paths
+- **Project-agnostic design** - works in any folder
+- **Zero dependencies** - just PowerShell
+- **Optional VS Code integration** - for workspace automation
 
-## 🚀 Quick Setup (Recommended)
+## 🚀 Quick Start (5 minutes)
 
-### Method 1: VS Code Workspace Integration (Automatic)
+### Option 1: Immediate PowerShell Usage (Simplest)
 
-This is the easiest method - the logging system loads automatically when you open the workspace.
-
-1. **Open the workspace file in VS Code:**
-   ```
-   File → Open Workspace From File → QuestionManager.code-workspace
-   ```
-
-2. **That's it!** The session logging system will automatically:
-   - Load when the workspace opens
-   - Display available commands in the terminal
-   - Set the correct working directory
-   - Be ready to use immediately
-
-### Method 2: Manual PowerShell Profile Setup
-
-If you prefer automatic loading in all PowerShell sessions:
-
-1. **Open your PowerShell profile:**
+1. **Download or clone the repository**
+   
    ```powershell
+   # Clone the repo
+   git clone https://github.com/bizcad/PromptTracking.git
+   
+   # Or copy the PromptTracking folder to your project
+   ```
+
+2. **Copy the PromptTracking folder to your project root**
+   
+   ```
+   YourProject/
+   ├── PromptTracking/
+   │   ├── session-log.ps1
+   │   ├── log-aliases.ps1
+   │   └── load-session-logging.ps1
+   └── ... your project files
+   ```
+
+3. **Open PowerShell in your project folder and load the system**
+   
+   ```powershell
+   # Navigate to your project root
+   cd "C:\Path\To\YourProject"
+   
+   # Load the session logging system
+   . .\PromptTracking\load-session-logging.ps1
+   
+   # Start logging!
+   logt "Session started"
+   ```
+
+4. **Your log file is created automatically**
+   - Location: `YourProject/PromptTracking/Session Log YYYYMMDD.md`
+   - Opens daily - one file per day
+   - Ready to search and share
+
+### Option 2: Global PowerShell Profile (Always Available)
+
+For global access from any folder:
+
+1. **Edit your PowerShell profile**
+   
+   ```powershell
+   # Open your profile in your editor
    notepad $PROFILE
+   
+   # If file doesn't exist, create it
    ```
 
-2. **Add this code:**
+2. **Add the initialization code**
+   
+   Copy the contents of `profile-addition.ps1` from the repository and paste it into your profile. Adjust the path to point to your PromptTracking installation:
+   
    ```powershell
-   # Auto-load session log aliases and navigate to QuestionManager project
-   if (Test-Path "G:\repos\QuestionManager\PromptTracking\session-log.ps1") {
-       # Change to G: drive
-       Set-Location "G:"
-       # Change to QuestionManager project directory
-       Set-Location "G:\repos\QuestionManager"
-       # Load session log aliases
-       . "G:\repos\QuestionManager\PromptTracking\log-aliases.ps1"
-       Write-Host "QuestionManager project loaded with session logging aliases!" -ForegroundColor Green
+   # Example: If you installed at C:\MyProject\PromptTracking
+   $PromptTrackingPath = "C:\MyProject\PromptTracking\load-session-logging.ps1"
+   
+   if (Test-Path $PromptTrackingPath) {
+       & $PromptTrackingPath
    }
    ```
 
-3. **Reload your profile:**
+3. **Reload your profile**
+   
    ```powershell
    . $PROFILE
    ```
 
-## 📁 File Structure
+4. **Done!** The system loads automatically when you open PowerShell
+
+### Option 3: VS Code Workspace Integration (Optional)
+
+For VS Code users who want automatic loading:
+
+1. **Create or edit your `.code-workspace` file**
+   
+   ```json
+   {
+     "folders": [{"path": "."}],
+     "tasks": {
+       "version": "2.0.0",
+       "tasks": [{
+         "label": "Load Session Logging",
+         "type": "shell",
+         "command": "pwsh",
+         "args": ["-File", "${workspaceFolder}/PromptTracking/workspace-init.ps1"],
+         "runOptions": {"runOn": "folderOpen"}
+       }]
+     }
+   }
+   ```
+
+2. **Open the workspace in VS Code**
+   
+   ```
+   File → Open Workspace from File → Select your .code-workspace file
+   ```
+
+3. **The logging system loads automatically** when the workspace opens
+
+## 📁 Folder Structure After Installation
 
 ```
-QuestionManager/
-├── QuestionManager.code-workspace    # VS Code workspace with auto-loading
+YourProject/
 ├── PromptTracking/
-│   ├── workspace-init.ps1            # Automatic initialization script
-│   ├── session-log.ps1               # Main logging functions
-│   ├── log-aliases.ps1               # Command aliases (logt, logs, etc.)
-│   ├── Session Log YYYYMMDD.md       # Daily log files
-│   ├── InstallationGuide.md          # This file
-│   └── Session Logging README.md     # Usage documentation
-└── QuestionManager/                  # Solution folder
-```
-
-## 🎯 Workspace Configuration Details
-
-The VS Code workspace (`QuestionManager.code-workspace`) includes:
-
-### Automatic Task Configuration
-```json
-{
-  "label": "Load Session Log Aliases",
-  "type": "shell", 
-  "command": "pwsh",
-  "args": [
-    "-File",
-    "${workspaceFolder}/PromptTracking/workspace-init.ps1"
-  ],
-  "runOptions": {
-    "runOn": "folderOpen"
-  }
-}
-```
-
-### Terminal Settings
-```json
-{
-  "terminal.integrated.cwd": "G:\\repos\\QuestionManager",
-  "terminal.integrated.defaultProfile.windows": "PowerShell"
-}
-```
-
-### Available Tasks
-- **Load Session Log Aliases** - Automatic on workspace open
-- **Build Solution** - `dotnet build QuestionManager.slnx`
-- **Start AppHost (Full Solution)** - Run the entire application stack
-
-## 🔧 Workspace Initialization Script
-
-The `workspace-init.ps1` script provides:
-
-### Features
-- **🚀 Visual progress indicators** with emojis
-- **📁 Automatic directory setup** (sets working directory to project root)
-- **📝 Session logging system loading** (loads main script and aliases)
-- **📋 Command documentation** (displays available commands)
-- **⚠️ Error handling** with helpful messages
-- **✅ Success confirmation** when everything loads
-
-### What It Does
-1. **Determines project root** (parent directory of PromptTracking)
-2. **Sets working directory** to project root
-3. **Loads session-log.ps1** (main logging functions)
-4. **Loads log-aliases.ps1** (command shortcuts)
-5. **Displays available commands** for immediate use
-
-### Output Example
-```
-🚀 Initializing QuestionManager workspace...
-
-📁 Project root: G:\repos\QuestionManager
-
-📝 Loading session logging system...
-✅ Session logging system loaded successfully!
-
-📋 Available commands:
-   logt    - Log text entry
-   logs    - Log section header  
-   logc    - Log code block
-   log-help - Show all logging commands
-
-🎯 QuestionManager workspace ready!
-   Current directory: G:\repos\QuestionManager
+│   ├── session-log.ps1               # Main logging script
+│   ├── log-aliases.ps1               # Command aliases
+│   ├── load-session-logging.ps1      # Initialization helper
+│   ├── workspace-init.ps1            # VS Code workspace setup
+│   └── Session Log YYYYMMDD.md       # Daily log files (auto-created)
+├── .code-workspace                   # VS Code workspace file (optional)
+├── profile-addition.ps1              # Profile setup code (reference)
+└── ... your other project files
 ```
 
 ## 🎮 Available Commands
 
-Once loaded, you have these commands available:
+Once loaded, you have these commands:
 
-| Command | Description | Usage |
-|---------|-------------|-------|
-| `logt "text"` | Log text entry with timestamp | `logt "Fixed the bug"` |
-| `logs "heading"` | Log section header | `logs "New Feature"` |
-| `logc` | Log code block from clipboard | Copy code, then `logc` |
-| `log-help` | Show all available commands | `log-help` |
+| Command | Description |
+|---------|-------------|
+| `log` | Append clipboard with timestamp |
+| `logs` | Append clipboard as section heading |
+| `logc` | Append clipboard as code block |
+| `logt "title"` | Append with custom section title |
+| `logp` | Append as "Prompt:" section (with markers) |
+| `logr` | Append as "Response:" section (with markers) |
+| `logn` | Append as "Note:" section (with markers) |
+| `Show-LogHelp` | Display all available commands |
+| `log-help` | Alias for Show-LogHelp |
 
-## ✅ Benefits
+## 📋 Example Workflows
 
-### Immediate Advantages
-- **Zero setup friction** - Works immediately when opening workspace
-- **No manual steps** - Completely automated
-- **Portable configuration** - Works on any machine with the project
-- **Team-friendly** - Same experience for all developers
+### Logging AI Conversations
 
-### Long-term Benefits  
-- **Consistent workflow** - Same commands available every session
-- **Conversation continuity** - Easy to pick up where you left off
-- **Knowledge preservation** - Searchable record of decisions and solutions
-- **Debugging aid** - Timestamped record of changes and their context
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**Commands not available after opening workspace:**
-1. Check that `workspace-init.ps1` exists in `PromptTracking/` folder
-2. Verify VS Code opened the workspace file (not just the folder)
-3. Look for initialization output in the terminal
-
-**Path errors:**
-1. Ensure the project structure matches the expected layout
-2. Check that `PromptTracking` folder is directly under project root
-3. Verify `session-log.ps1` and `log-aliases.ps1` exist
-
-**PowerShell execution policy:**
 ```powershell
+# Copy your prompt to clipboard
+logp
+
+# Copy the response to clipboard
+logr
+```
+
+### Logging Code Changes
+
+```powershell
+# Copy a code snippet to clipboard
+logc
+```
+
+### Daily Notes
+
+```powershell
+# Copy your notes to clipboard
+logt "Daily standup - completed task X"
+```
+
+### Viewing Your Logs
+
+```powershell
+# Open your log file in Notepad
+notepad ".\PromptTracking\Session Log $(Get-Date -Format 'yyyyMMdd').md"
+
+# Or just open the folder and look for today's log
+Explorer .\PromptTracking\
+```
+
+## 🔧 Direct Script Usage (No Aliases)
+
+You can also run the script directly without aliases:
+
+```powershell
+# Basic append
+.\PromptTracking\session-log.ps1
+
+# With section heading
+.\PromptTracking\session-log.ps1 -Section -Title "My Work"
+
+# As code block
+.\PromptTracking\session-log.ps1 -CodeBlock
+
+# Custom path
+.\PromptTracking\session-log.ps1 -Path ".\custom-log.md"
+
+# With markers (for AI conversations)
+.\PromptTracking\session-log.ps1 -Section -Title "Prompt:" -Markers Prompt
+
+# For full parameter list
+Get-Help .\PromptTracking\session-log.ps1
+```
+
+## ✅ Verification
+
+To verify your installation works:
+
+1. **Load the system**
+   ```powershell
+   . .\PromptTracking\load-session-logging.ps1
+   ```
+
+2. **Copy some text to clipboard** (or just type something and Ctrl+C)
+
+3. **Test the log command**
+   ```powershell
+   log
+   ```
+
+4. **Check the output**
+   ```powershell
+   # Should show: "Appended clipboard to .\PromptTracking\Session Log YYYYMMDD.md"
+   ```
+
+5. **View your log file**
+   ```powershell
+   cat ".\PromptTracking\Session Log $(Get-Date -Format 'yyyyMMdd').md"
+   ```
+
+## 🚨 Troubleshooting
+
+### "Cannot find path" error
+
+**Problem:** Script says `load-session-logging.ps1` not found
+
+**Solution:** 
+- Ensure `load-session-logging.ps1` is in the `PromptTracking` folder
+- Make sure you're in the project root directory when running the command
+- Check folder names are spelled correctly
+
+### "Clipboard empty" warning
+
+**Problem:** Log command says clipboard is empty
+
+**Solution:**
+- Copy something to clipboard first: `Ctrl+C`
+- Or use the script directly with a path: `.\session-log.ps1 -Path ".\my-log.md"`
+
+### PowerShell execution policy error
+
+**Problem:** Script execution is blocked by policy
+
+**Solution:**
+```powershell
+# Set execution policy for current user
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Or run PowerShell as Admin and run the above command
 ```
 
-### Manual Testing
+### Commands not recognized after opening PowerShell
 
-Test the system manually:
-```powershell
-# Navigate to project root
-cd "G:\repos\QuestionManager"
+**Problem:** Aliases don't work in new PowerShell window
 
-# Run initialization script directly
-.\PromptTracking\workspace-init.ps1
-
-# Test a command
-logt "Testing the system"
-```
-
-## 📤 Sharing with Team
-
-To share this setup with your team:
-
-1. **Include the PromptTracking folder** in your repository
-2. **Commit the workspace file** with the task configuration  
-3. **Document the workflow** in your project README
-4. **Team members just need to:**
-   - Clone the repository
-   - Open the workspace file in VS Code
-   - Start using the logging commands immediately
+**Solution:**
+- Load the system in each new window: `. .\PromptTracking\load-session-logging.ps1`
+- Or add to your PowerShell profile (Option 2 above)
+- Or use VS Code workspace (Option 3 above)
 
 ## 🎯 Next Steps
 
-After installation:
-1. **Open the workspace** in VS Code to test automatic loading
-2. **Try the basic commands** (`logt`, `logs`, `logc`)
-3. **Check the generated log file** in `PromptTracking/Session Log YYYYMMDD.md`
-4. **Customize as needed** for your specific workflow
+1. **Try the basic commands** with some test text
+2. **Check your generated log file** to see the formatting
+3. **Customize the workflow** for your needs
+4. **Share with team members** by including the PromptTracking folder in your repo
 
-The system is designed to be unobtrusive but powerful - it stays out of your way until you need it, then provides quick, consistent logging capabilities that enhance your development workflow.
+## 📚 Additional Resources
+
+- **How Session Logging Works** - Technical deep-dive into the system
+- **Session Logging README** - Usage examples and best practices
+- **profile-addition.ps1** - Reference code for global setup
+- **workspace-init.ps1** - Reference code for VS Code workspace setup
+
+## 💡 Tips
+
+- **Daily logs**: Each day creates a new log file automatically
+- **Searchable**: All logs are markdown - open any text editor to search
+- **No cleanup needed**: It's safe to have many log files
+- **Flexible paths**: Can log to custom locations with `-Path` parameter
+- **Portable**: Just copy the PromptTracking folder to move it to another project
+
+The system is designed to be simple, reliable, and get out of your way. Happy logging!
 

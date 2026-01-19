@@ -1,84 +1,252 @@
-# Session Log 2025-10-14
+# How Session Logging Works
 
+A technical deep-dive into the PromptTracking session logging system architecture and implementation.
 
-## How session logging works (2025-10-14 09:01:24)
-Let me examine the session logging script to understand how it works. 
+## Overview
 
-Read [](file:///g%3A/repos/QuestionManager/PromptTracking/session-log.ps1)
+PromptTracking is a self-contained PowerShell script system that captures clipboard content into timestamped markdown log files. It requires only PowerShell—no external dependencies or configuration management tools.
 
-Now let me also check the README file to see if there are any recent changes that provide additional context: 
+## Core Architecture
 
-Read [](file:///g%3A/repos/QuestionManager/PromptTracking/Session%20Logging%20README.md)
+### File Structure
 
-## How the Session Logging Code Works
+```
+PromptTracking/
+├── session-log.ps1           # Main logging script
+├── log-aliases.ps1           # Convenience function wrappers
+├── load-session-logging.ps1  # Initialization script
+└── Session Log YYYYMMDD.md   # Generated log files (auto-created)
+```
 
-This is a PowerShell-based session logging system designed to quickly capture clipboard content into organized markdown log files. Here's how it works:
+### Script Independence
 
-### **Core Functionality**
+Each script is designed to work standalone:
 
-**1. Script Parameters:**
-- `$Path` - Optional custom file path (defaults to daily log in PromptTracking folder)
-- `$Section` - Creates level-2 markdown heading for the entry
-- `$Title` - Custom section title (requires -Section flag)
-- `$CodeBlock` - Wraps clipboard content in markdown code fences (```)
-- `$Quiet` - Suppresses confirmation output
+- **session-log.ps1** - Core functionality; can be called directly with parameters
+- **log-aliases.ps1** - Optional convenience layer that provides simple command aliases
+- **load-session-logging.ps1** - Helper that sources both scripts in the correct context
 
-**2. File Path Resolution:**
+Users can use the scripts in several ways:
 ```powershell
-function Get-SessionLogPath {
-  param([string]$Explicit)
-  if ($Explicit) { return (Resolve-Path -LiteralPath $Explicit -ErrorAction SilentlyContinue) ?? $Explicit }
-  $dir = Join-Path $PSScriptRoot '.'
-  $date = Get-Date -Format 'yyyyMMdd'
-  return Join-Path $dir "Session Log $date.md"
+# Direct execution
+.\PromptTracking\session-log.ps1 -Section -Title "My Entry"
+
+# Via aliases (after sourcing log-aliases.ps1)
+logt "My Entry"
+
+# Via helper script
+. .\PromptTracking\load-session-logging.ps1
+```
+
+## How session-log.ps1 Works
+
+### Parameters
+
+The main script accepts these parameters:
+
+- **-Path** - Custom output file path (defaults to `Session Log YYYYMMDD.md` in script directory)
+- **-Section** - Create a markdown heading for the entry (H2 by default)
+- **-Title** - Custom section heading text
+- **-H1** - Use H1 heading instead of H2
+- **-CodeBlock** - Wrap clipboard content in markdown code fence (```)
+- **-Markers** - Add HTML comment markers: `Prompt`, `Response`, or `Note`
+- **-DayStart/-DayEnd** - Insert day boundary markers
+- **-GuardLargeClipboard** - Enable clipboard size validation
+- **-MaxClipboardChars** - Maximum allowed clipboard size
+- **-AutoTruncate** - Truncate instead of reject large clipboard
+- **-Quiet** - Suppress confirmation messages
+
+### Execution Flow
+
+1. **Path Resolution** (`Get-SessionLogPath`)
+   - If explicit `-Path` provided: use that path
+   - Otherwise: generate `Session Log YYYYMMDD.md` in script directory
+   - Path automatically resolves relative to script location
+
+2. **Content Retrieval**
+   - Reads clipboard with `Get-Clipboard -Raw`
+   - Exits with warning if clipboard is empty
+
+3. **Optional Size Validation**
+   - If `-GuardLargeClipboard` enabled, checks content length
+   - Either truncates (if `-AutoTruncate`) or aborts
+
+4. **Header Generation**
+   ```powershell
+   # Basic entry: [2025-01-18 14:30:22]
+   # Heading entry: ## Title (2025-01-18 14:30:22)
+   # H1 heading: # Title (2025-01-18 14:30:22)
+   ```
+
+5. **Content Wrapping**
+   - Wraps in code fences if `-CodeBlock` specified
+   - Adds HTML comment markers if `-Markers` specified
+
+6. **Day Boundary Markers** (optional)
+   - Inserts `<!--Day Start-->` and `<!--Day End-->` comments
+   - Useful for parsing and section organization
+
+7. **File Operations**
+   - Creates file with header if it doesn't exist
+   - Appends formatted content with UTF8 encoding
+   - Provides green confirmation message (unless `-Quiet`)
+
+### Output Example
+
+**Input:** Clipboard contains `function example() { return true; }`
+
+**Command:** `.\session-log.ps1 -Section -Title "Code Example" -CodeBlock`
+
+**Output (appended to file):**
+```markdown
+## Code Example (2025-01-18 14:30:22)
+
+\`\`\`
+function example() { return true; }
+\`\`\`
+```
+
+## How log-aliases.ps1 Works
+
+The aliases file provides convenient function wrappers:
+
+| Alias | What It Does | Equivalent |
+|-------|------------|-----------|
+| `log` | Basic timestamp entry | `session-log.ps1` |
+| `logs` | Section with heading | `session-log.ps1 -Section` |
+| `logc` | Code block entry | `session-log.ps1 -CodeBlock` |
+| `logt "title"` | Custom title section | `session-log.ps1 -Section -Title "title"` |
+| `logp` | "Prompt:" section (H1 + markers) | `session-log.ps1 -H1 -Section -Title "Prompt:" -Markers Prompt` |
+| `logr` | "Response:" section (H1 + markers) | `session-log.ps1 -H1 -Section -Title "Response:" -Markers Response` |
+| `logn` | "Note:" section (H1 + markers) | `session-log.ps1 -H1 -Section -Title "Note:" -Markers Note` |
+| `Show-LogHelp` | Display all commands | Prints help text |
+
+The `log-help` alias is provided for backward compatibility and points to `Show-LogHelp`.
+
+## How load-session-logging.ps1 Works
+
+This is a convenience initialization script:
+
+1. Determines the project root by going up one directory from the script location
+2. Changes to project root
+3. Sources `session-log.ps1` to load functions
+4. Sources `log-aliases.ps1` to load command aliases
+5. Displays colorized status messages
+6. Returns to original location
+
+This allows a single command to set everything up:
+```powershell
+. .\PromptTracking\load-session-logging.ps1
+```
+
+## Project Agnosticism
+
+The system is completely project-agnostic:
+
+- **No hardcoded paths** - Everything uses `$PSScriptRoot` and relative paths
+- **Folder-independent** - Works in any user directory
+- **Stateless** - Doesn't require VS Code, configuration files, or environment variables
+- **Idempotent** - Running the scripts multiple times produces the same result
+- **Portable** - Copy the `PromptTracking` folder anywhere and it works
+
+## Daily Log File Convention
+
+By default, logs are organized daily:
+
+- `Session Log 20250118.md` - January 18, 2025
+- `Session Log 20250119.md` - January 19, 2025
+
+This convention:
+- Makes logs searchable by date
+- Prevents single massive files
+- Aligns with common logging practices
+- Keeps related entries together
+
+## Integration with VS Code (Optional)
+
+For VS Code users, the system can be integrated via workspace tasks:
+
+### Workspace Configuration
+
+Add to `.code-workspace` file:
+```json
+{
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [{
+      "label": "Load Session Logging",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-File", "${workspaceFolder}/PromptTracking/workspace-init.ps1"],
+      "runOptions": {"runOn": "folderOpen"}
+    }]
+  }
 }
 ```
-- If no explicit path provided, creates daily log file: `Session Log 20251014.md`
-- Files are stored in the same directory as the script (PromptTracking)
 
-**3. Content Processing:**
-- Retrieves clipboard content with `Get-Clipboard -Raw`
-- Exits with warning if clipboard is empty
-- Generates timestamp in ISO format: `2025-10-14 10:30:15`
+This causes the logging system to load automatically when the workspace opens.
 
-**4. Header Generation:**
-```powershell
-$header = if ($Section) {
-  if ($Title) { "`n## $Title ($timestamp)`n" } else { "`n## Entry $timestamp`n" }
-} else { "`n[$timestamp]`n" }
+### Optional Keybindings
+
+Add to `.vscode/keybindings.json`:
+```json
+[
+  {
+    "key": "ctrl+shift+l",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {"text": "log\u000D"},
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+alt+l",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {"text": "logs\u000D"},
+    "when": "terminalFocus"
+  }
+]
 ```
-- **Basic entry**: `[2025-10-14 10:30:15]`
-- **Section entry**: `## Entry 2025-10-14 10:30:15`
-- **Title section**: `## Bug Fix (2025-10-14 10:30:15)`
 
-**5. Code Block Wrapping:**
+## Key Design Principles
+
+1. **Simplicity** - Minimal PowerShell, no dependencies
+2. **Portability** - Works anywhere without installation
+3. **Flexibility** - Supports multiple usage patterns
+4. **Self-Sufficiency** - Doesn't require external tools
+5. **Idempotence** - Safe to run repeatedly
+6. **Transparency** - Clear output showing what was logged
+
+## Common Patterns
+
+### Logging AI Conversation
+
 ```powershell
-if ($CodeBlock) { $content = "``````n$content`n``````" }
+# Copy prompt to clipboard
+logp  # Log with "Prompt:" marker
+
+# Copy response to clipboard  
+logr  # Log with "Response:" marker
 ```
-- Wraps clipboard content in triple backticks for proper markdown code formatting
 
-**6. File Operations:**
-- Creates new daily log file with date header if it doesn't exist
-- Appends formatted content using `Add-Content` with UTF8 encoding
-- Provides green confirmation message unless `-Quiet` is specified
+### Logging Code Changes
 
-### **Workflow Integration**
+```powershell
+# Copy code snippet to clipboard
+logc  # Log as code block
+```
 
-The system includes terminal aliases (`log-aliases.ps1`) for rapid access:
-- `log` - Basic timestamp entry
-- `logs` - Section with heading
-- `logc` - Code block with proper formatting
-- `logt` - Custom title section
+### Custom Workflows
 
-### **VS Code Integration**
-The system works with VS Code tasks and keybindings for seamless development workflow integration, allowing you to quickly log code snippets, conversation notes, or debugging output directly from your clipboard.
+```powershell
+# Copy work notes to clipboard
+logt "Bug Investigation"  # Log with custom title
+```
 
-### **Key Benefits**
-1. **Speed** - One command to log clipboard content
-2. **Organization** - Daily files with timestamps and sections
-3. **Markdown Ready** - Proper formatting for documentation
-4. **Development Focused** - Code block support with syntax highlighting
-5. **Flexible** - Works standalone or with terminal aliases
+## No Clipboard Required for Direct Paths
 
-This creates a comprehensive logging system perfect for tracking development sessions, conversations, and code changes throughout your project work.
+While the system focuses on clipboard integration, you can also log file content directly:
+
+```powershell
+Get-Content "myfile.txt" | Set-Clipboard
+.\PromptTracking\session-log.ps1
+```
 

@@ -1,12 +1,29 @@
 # Add this to your PowerShell Profile for global access
 # Profile location: $PROFILE (usually Documents\PowerShell\Microsoft.PowerShell_profile.ps1)
+# 
+# Adjust the path to point to wherever you installed the PromptTracking folder
 
-# Session logging aliases - auto-load if in QuestionManager project
-if (Test-Path ".\PromptTracking\session-log.ps1") {
-    . ".\PromptTracking\log-aliases.ps1"
-} elseif (Test-Path ".\log-aliases.ps1") {
-    . ".\log-aliases.ps1"
+# Example: If you installed PromptTracking at C:\MyProject\PromptTracking
+# Set $PromptTrackingPath = "C:\MyProject\PromptTracking\load-session-logging.ps1"
+
+# Auto-load session logging from project folder if available
+$projectPath = Get-Location
+$PromptTrackingPath = Join-Path $projectPath "PromptTracking" "load-session-logging.ps1"
+
+if (Test-Path $PromptTrackingPath) {
+    & $PromptTrackingPath
 }
-
-# Alternative: Hard-coded path if you want it always available
-# . "g:\repos\QuestionManager\PromptTracking\log-aliases.ps1"
+else {
+    # Fallback: Look for PromptTracking in common locations
+    $commonPaths = @(
+        ".\PromptTracking\load-session-logging.ps1",
+        ".\PromptTracking\log-aliases.ps1"
+    )
+    
+    foreach ($path in $commonPaths) {
+        if (Test-Path $path) {
+            . $path
+            break
+        }
+    }
+}
