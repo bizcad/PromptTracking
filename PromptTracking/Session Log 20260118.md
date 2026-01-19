@@ -73,3 +73,8 @@ The file is ready to email! It's in the PromptTracking repo folder as Getting-St
 Made changes.
 <!--End Response-->
 
+
+[2026-01-18 21:36:35]
+- They are both markdown files. You can read them in the Github repo.
+
+
