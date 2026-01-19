@@ -26,7 +26,7 @@ try {
             . $aliasesPath
             Write-Host ""
             Write-Host "✅ Session logging system loaded successfully!" -ForegroundColor Green
-            Write-Host "💡 Try 'Show-LogHelp' to see all available commands!" -ForegroundColor Cyan
+            Write-Host "💡 Try 'log-help' to see all available commands!" -ForegroundColor Cyan
         } else {
             Write-Host "⚠️  Session log aliases not found at: $aliasesPath" -ForegroundColor Yellow
         }
